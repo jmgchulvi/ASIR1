@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Macondo&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="images/logofcresolvespestaña.png">
+</head>
+<body>
+    <!-- Language toggle button in the top right corner -->
+    <button id="lang-toggle" style="
+        position: fixed;
+        top: 18px;
+        right: 24px;
+        z-index: 2000;
+        background: #88304E;
+        color: #fff;
+        border: none;
+        border-radius: 20px;
+        padding: 0.5rem 1.2rem;
+        font-size: 1rem;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        transition: background 0.2s;">ES</button>
+    <header>
+        <div class="container" style="padding-top: 1rem; padding-bottom: 1rem;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr style="line-height: 2; height: 64px;">
+                    <td style="width: 90px; vertical-align: middle; text-align: left; padding: 8px 0;">
+                        <img src="images/logofcresolvespestaña.png" alt="FC Resolves Logo" style="height: 72px; width: 72px; object-fit: contain; display: block;">
+                    </td>
+                    <td style="text-align: center; padding: 8px 0;">
+                        <h1 style="margin: 0; text-align: center;">FC Resolves Incident Management System</h1>
+                        <nav>
+                            <ul style="display: flex; justify-content: center; gap: 1.5rem; margin: 0; padding: 0; list-style: none;">
+                                <li><a href="home_en.html">Home</a></li>
+                                <li><a href="index_en.html">Incidents</a></li>
+                            </ul>
+                        </nav>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="status-message" class="section status-message" style="display: none;"></div>
+
+        <div class="main-layout">
+
+            <div class="list-column col-md-12 col-lg-12">
+                <div id="list-users-section" class="section">
+                    <h2>User List</h2>
+                    <button id="listUsersBtn" class="btn-primary">Refresh List</button>
+                    <button id="showCreateUserFormBtn" class="btn-success">Create New User</button>
+
+                    <div class="table-container" id="users-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Registered</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="5">Loading users...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="create-user-section" class="section">
+                    <h2>Create New User</h2>
+                    <form id="createUserForm">
+                        <div>
+                            <label for="create_user_name">Name:</label>
+                            <input type="text" id="create_user_name" name="name" required>
+                        </div>
+                        <div>
+                            <label for="create_user_email">Email:</label>
+                            <input type="email" id="create_user_email" name="email" required>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Create User</button>
+                        <button type="button" id="cancelCreateUserBtn" class="btn-secondary">Cancel</button>
+                    </form>
+                </div>
+
+                <div id="update-user-section" class="section">
+                    <h2>Update User</h2>
+                    <form id="updateUserForm">
+                        <div>
+                            <label for="update_user_id">User ID:</label>
+                            <input type="number" id="update_user_id" name="user_id" required readonly>
+                        </div>
+                        <div>
+                            <label for="update_user_name">Name:</label>
+                            <input type="text" id="update_user_name" name="name" required>
+                        </div>
+                        <div>
+                            <label for="update_user_email">Email:</label>
+                            <input type="email" id="update_user_email" name="email" required>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                        <button type="button" id="cancelUpdateUserBtn" class="btn-secondary">Cancel</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <footer class="contact-footer">
+        <div class="container">
+            <div class="footer-col">
+                <p><strong>Contact:</strong></p>
+                <p>Email: soporte@fcresolves.com</p>
+            </div>
+            <div class="footer-col">
+                <p>Address: Elm Street 13, Valencia, Spain</p>
+                <p>Phone: +34 912 345 678</p>
+            </div>
+        </div>
+        <p class="copyright-footer">&copy; 2023 Incident Management System. All rights reserved.</p>
+    </footer>
+    <!-- Scroll to top button with image -->
+    <button id="scrollToTopBtn" class="scroll-to-top" title="Go to top">
+        <img src="/html/images/flechita.png" alt="Go to top" class="scroll-to-top-img">
+    </button>
+    <script src="js/api.js"></script>
+    <script src="js/users.js"></script>
+    <script>
+        // Show the button when the user scrolls down
+        const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 10) {
+                scrollToTopBtn.style.display = 'block';
+            } else {
+                scrollToTopBtn.style.display = 'none';
+            }
+        });
+
+        // Function to scroll the user to the top of the page
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Language toggle button (switches button text and redirects)
+        const langToggle = document.getElementById('lang-toggle');
+        let isSpanish = false;
+        langToggle.addEventListener('click', () => {
+            isSpanish = !isSpanish;
+            langToggle.textContent = isSpanish ? 'EN' : 'ES';
+            // Redirect to the other page according to the language
+            window.location.href = isSpanish ? 'users.html' : 'users_en.html';
+        });
+    </script>
+</body>
+</html>

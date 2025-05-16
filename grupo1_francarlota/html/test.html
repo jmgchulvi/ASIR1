@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API REST</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2 { color: #333; }
+        .api-test-section { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+        .api-test-section h3 { margin-top: 0; color: #007bff; }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="email"],
+        .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; }
+        button:hover { background-color: #0056b3; }
+        pre { background-color: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; }
+        .result { margin-top: 10px; }
+        .status-message { padding: 10px; margin-bottom: 15px; border-radius: 4px; font-weight: bold; }
+        .status-message.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status-message.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>Test de Operaciones de API REST</h1>
+    <p>Esta página permite probar los diferentes endpoints de la API de Incidencias y Usuarios.</p>
+
+    <div id="status-message" class="status-message" style="display: none;"></div>
+
+
+
+    <h2>Incidents Endpoints (/api/incidents)</h2>
+
+    <div class="api-test-section">
+        <h3>GET /incidents (List)</h3>
+        <button id="incidentListDefaultBtn">Listar No Solucionadas</button>
+        <button id="incidentListAllBtn">Listar Todas</button>
+        <div class="result">Resultado: <pre id="incidentListResult"></pre></div>
+    </div>
+
+    <div class="api-test-section">
+        <h3>GET /incidents/{id} (Get One)</h3>
+        <div class="form-group"><label for="incidentGetId">Incident ID:</label><input type="number" id="incidentGetId"></div>
+        <button id="incidentGetBtn">Obtener Incidencia</button>
+        <div class="result">Resultado: <pre id="incidentGetResult"></pre></div>
+    </div>
+
+    <div class="api-test-section">
+        <h3>POST /incidents (Create)</h3>
+        <form id="incidentPostForm">
+            <div class="form-group"><label for="post_title">Título (Req):</label><input type="text" id="post_title" name="title" required value="Incidencia de Prueba"></div>
+            <div class="form-group"><label for="post_description">Descripción (Req):</label><textarea id="post_description" name="description" required>Esto es una descripción de prueba.</textarea></div>
+            <div class="form-group"><label for="post_category">Categoría (Req):</label><input type="text" id="post_category" name="category" required value="Test"></div>
+            <div class="form-group"><label for="post_requestor_id">ID Solicitante (Req):</label><input type="number" id="post_requestor_id" name="requestor_id" required min="1" value="1"></div>
+            <div class="form-group"><label for="post_affected_asset">Activo Afectado (Opc):</label><input type="text" id="post_affected_asset" name="affected_asset" value="Equipo X"></div>
+            <button type="submit">Crear Incidencia</button>
+        </form>
+        <div class="result">Resultado: <pre id="incidentPostResult"></pre></div>
+    </div>
+
+     <div class="api-test-section">
+        <h3>PUT /incidents/{id} (Update)</h3>
+         <div class="form-group"><label for="incidentPutId">Incident ID:</label><input type="number" id="incidentPutId"></div>
+        <form id="incidentPutForm">
+            <p>Introduce solo los campos que quieras actualizar.</p>
+            <div class="form-group"><label for="put_title">Título:</label><input type="text" id="put_title" name="title"></div>
+            <div class="form-group"><label for="put_description">Descripción:</label><textarea id="put_description" name="description"></textarea></div>
+            <div class="form-group"><label for="put_category">Categoría:</label><input type="text" id="put_category" name="category"></div>
+             <div class="form-group"><label for="put_affected_asset">Activo Afectado (dejar vacío para NULL):</label><input type="text" id="put_affected_asset" name="affected_asset"></div>
+
+             <div class="form-group">
+                <label for="put_status">Estado:</label>
+                <select id="put_status" name="status">
+                    <option value="">-- No Cambiar --</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="En Proceso">En Proceso</option>
+                    <option value="Solucionado">Solucionado</option>
+                    <option value="Cerrado">Cerrado</option>
+                    <option value="Re-abierto">Re-abierto</option>
+                    <option value="Cancelado">Cancelado</option>
+                </select>
+            </div>
+
+            <div class="form-group"><label for="put_assigned_to_id">ID Asignado (dejar vacío para NULL):</label><input type="number" id="put_assigned_to_id" name="assigned_to_id"></div>
+            <div class="form-group"><label for="put_in_progress_details">Detalles En Proceso (dejar vacío para NULL):</label><textarea id="put_in_progress_details" name="in_progress_details"></textarea></div>
+            <div class="form-group"><label for="put_resolution_comments">Comentarios Solución (dejar vacío para NULL):</label><textarea id="put_resolution_comments" name="resolution_comments"></textarea></div>
+
+            <button type="submit">Actualizar Incidencia</button>
+        </form>
+        <div class="result">Resultado: <pre id="incidentPutResult"></pre></div>
+    </div>
+
+    <div class="api-test-section">
+        <h3>DELETE /incidents/{id} (Delete)</h3>
+        <div class="form-group"><label for="incidentDeleteId">Incident ID:</label><input type="number" id="incidentDeleteId"></div>
+        <button id="incidentDeleteBtn">Eliminar Incidencia</button>
+        <div class="result">Resultado: <pre id="incidentDeleteResult"></pre></div>
+    </div>
+
+
+    <h2>Users Endpoints (/api/users)</h2>
+
+     <div class="api-test-section">
+        <h3>GET /users (List)</h3>
+        <button id="userListBtn">Listar Todos los Usuarios</button>
+        <div class="result">Resultado: <pre id="userListResult"></pre></div>
+    </div>
+
+    <div class="api-test-section">
+        <h3>GET /users/{id} (Get One)</h3>
+        <div class="form-group"><label for="userGetId">User ID:</label><input type="number" id="userGetId"></div>
+        <button id="userGetBtn">Obtener Usuario</button>
+        <div class="result">Resultado: <pre id="userGetResult"></pre></div>
+    </div>
+
+     <div class="api-test-section">
+        <h3>POST /users (Create)</h3>
+        <form id="userPostForm">
+            <div class="form-group"><label for="post_user_name">Nombre (Req):</label><input type="text" id="post_user_name" name="name" required value="Usuario de Prueba"></div>
+            <div class="form-group"><label for="post_user_email">Email (Req):</label><input type="email" id="post_user_email" name="email" required value="test_user@example.com"></div>
+            <button type="submit">Crear Usuario</button>
+        </form>
+        <div class="result">Resultado: <pre id="userPostResult"></pre></div>
+    </div>
+
+     <div class="api-test-section">
+        <h3>PUT /users/{id} (Update)</h3>
+         <div class="form-group"><label for="userPutId">User ID:</label><input type="number" id="userPutId"></div>
+        <form id="userPutForm">
+            <p>Introduce solo los campos que quieras actualizar.</p>
+            <div class="form-group"><label for="put_user_name">Nombre:</label><input type="text" id="put_user_name" name="name"></div>
+            <div class="form-group"><label for="put_user_email">Email:</label><input type="email" id="put_user_email" name="email"></div>
+            <button type="submit">Actualizar Usuario</button>
+        </form>
+        <div class="result">Resultado: <pre id="userPutResult"></pre></div>
+    </div>
+
+     <div class="api-test-section">
+        <h3>DELETE /users/{id} (Delete)</h3>
+        <div class="form-group"><label for="userDeleteId">User ID:</label><input type="number" id="userDeleteId"></div>
+        <button id="userDeleteBtn">Eliminar Usuario</button>
+        <div class="result">Resultado: <pre id="userDeleteResult"></pre></div>
+    </div>
+
+    <script>
+        // --- Helper functions (basic versions for testing) ---
+        const API_URL = '/api'; // Ajusta si tu base URL es diferente
+
+        function showStatusMessage(message, type) {
+            const statusElement = document.getElementById('status-message');
+            if (statusElement) {
+                statusElement.textContent = message;
+                statusElement.className = 'status-message'; // Reset classes
+                statusElement.classList.add(type);
+                statusElement.style.display = 'block';
+                // Opcional: ocultar después de X segundos
+                // setTimeout(() => { statusElement.style.display = 'none'; }, 5000);
+            } else {
+                console.log(`Status [${type}]: ${message}`);
+            }
+        }
+
+        function hideStatusMessage() {
+             const statusElement = document.getElementById('status-message');
+             if (statusElement) {
+                 statusElement.style.display = 'none';
+             }
+        }
+
+
+        async function fetchData(endpoint, method = 'GET', data = null) {
+            const url = `${API_URL}${endpoint}`;
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+
+            if (data !== null && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+                options.body = JSON.stringify(data);
+            }
+
+            console.log(`Workspaceing: ${method} ${url}`, data);
+
+            try {
+                const response = await fetch(url, options);
+
+                // Intenta leer el cuerpo como texto primero para depuración si JSON falla
+                const text = await response.text();
+                let result = null;
+                try {
+                    result = JSON.parse(text);
+                } catch (e) {
+                    console.warn('No se pudo parsear la respuesta como JSON:', e, 'Respuesta cruda:', text);
+                     // Si no es JSON, devolvemos un error con el texto crudo si la respuesta no fue OK
+                     if (!response.ok) {
+                          const errorMsg = `Respuesta no JSON y error ${response.status}: ${text.substring(0, 200)}...`;
+                          if (typeof showStatusMessage === 'function') showStatusMessage(errorMsg, 'error');
+                          return { error: errorMsg, statusCode: response.status };
+                     }
+                     // Si fue OK pero no JSON, puede ser inesperado
+                     const warnMsg = `Respuesta inesperada (OK pero no JSON): ${text.substring(0, 200)}...`;
+                     if (typeof showStatusMessage === 'function') showStatusMessage(warnMsg, 'error'); // Reportar como error inesperado
+                     return { error: warnMsg, statusCode: response.status }; // Devolver como error para que el llamador lo maneje
+                }
+
+
+                if (!response.ok) {
+                    console.error('API Error Response:', response.status, result);
+                    if (typeof showStatusMessage === 'function') showStatusMessage(`Error ${response.status}: ${result.message || result.error || 'Error desconocido'}`, 'error');
+                    return { error: result.message || result.error || `API Error: ${response.status}`, statusCode: response.status };
+                }
+
+                console.log('API Success Response:', response.status, result);
+                if (typeof showStatusMessage === 'function') {
+                    if (method !== 'GET') {
+                         showStatusMessage(`Operación ${method} exitosa!`, 'success');
+                     } else {
+                         hideStatusMessage();
+                     }
+                }
+
+                return result;
+
+            } catch (networkError) {
+                console.error('Network or Fetch Setup Error:', networkError);
+                const errorMessage = `Network Error: ${networkError.message}. Asegúrate de que el backend esté corriendo.`;
+                 if (typeof showStatusMessage === 'function') showStatusMessage(errorMessage, 'error');
+                 return { error: errorMessage, statusCode: 0 };
+            }
+        }
+
+
+        // --- Element references ---
+        // Incident Test Elements
+        const incidentListDefaultBtn = document.getElementById('incidentListDefaultBtn');
+        const incidentListAllBtn = document.getElementById('incidentListAllBtn');
+        const incidentListResult = document.getElementById('incidentListResult');
+
+        const incidentGetIdInput = document.getElementById('incidentGetId');
+        const incidentGetBtn = document.getElementById('incidentGetBtn');
+        const incidentGetResult = document.getElementById('incidentGetResult');
+
+        const incidentPostForm = document.getElementById('incidentPostForm');
+        const incidentPostResult = document.getElementById('incidentPostResult');
+
+        const incidentPutIdInput = document.getElementById('incidentPutId');
+        const incidentPutForm = document.getElementById('incidentPutForm');
+        const incidentPutResult = document.getElementById('incidentPutResult');
+
+        const incidentDeleteIdInput = document.getElementById('incidentDeleteId');
+        const incidentDeleteBtn = document.getElementById('incidentDeleteBtn');
+        const incidentDeleteResult = document.getElementById('incidentDeleteResult');
+
+        // User Test Elements
+        const userListBtn = document.getElementById('userListBtn');
+        const userListResult = document.getElementById('userListResult');
+
+        const userGetIdInput = document.getElementById('userGetId');
+        const userGetBtn = document.getElementById('userGetBtn');
+        const userGetResult = document.getElementById('userGetResult');
+
+        const userPostForm = document.getElementById('userPostForm');
+        const userPostResult = document.getElementById('userPostResult');
+
+        const userPutIdInput = document.getElementById('userPutId');
+        const userPutForm = document.getElementById('userPutForm');
+        const userPutResult = document.getElementById('userPutResult');
+
+        const userDeleteIdInput = document.getElementById('userDeleteId');
+        const userDeleteBtn = document.getElementById('userDeleteBtn');
+        const userDeleteResult = document.getElementById('userDeleteResult');
+
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Ejemplo de validación para un botón
+            const incidentListDefaultBtn = document.getElementById('incidentListDefaultBtn');
+            if (incidentListDefaultBtn) {
+                incidentListDefaultBtn.addEventListener('click', async () => {
+                    incidentListResult.textContent = 'Loading...';
+                    const data = await fetchData('/incidents', 'GET');
+                    incidentListResult.textContent = JSON.stringify(data, null, 2);
+                });
+            } else {
+                console.error('El elemento con ID "incidentListDefaultBtn" no existe en el DOM.');
+            }
+
+            // Incident List All Filter
+            incidentListAllBtn.addEventListener('click', async () => {
+                incidentListResult.textContent = 'Loading...';
+                const data = await fetchData('/incidents?filter=all', 'GET');
+                incidentListResult.textContent = JSON.stringify(data, null, 2);
+            });
+
+            // Incident Get One
+            incidentGetBtn.addEventListener('click', async () => {
+                const id = incidentGetIdInput.value;
+                if (!id) {
+                    incidentGetResult.textContent = 'Enter Incident ID';
+                    return;
+                }
+                incidentGetResult.textContent = 'Loading...';
+                const data = await fetchData(`/incidents/${id}`, 'GET');
+                incidentGetResult.textContent = JSON.stringify(data, null, 2);
+            });
+
+            // Incident Post
+            incidentPostForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const formData = new FormData(incidentPostForm);
+                const data = {
+                    title: formData.get('title'),
+                    description: formData.get('description'),
+                    category: formData.get('category'),
+                    requestor_id: parseInt(formData.get('requestor_id')),
+                    affected_asset: formData.get('affected_asset') || null // Send null if empty
+                };
+
+                 // Basic validation
+                if (!data.title || !data.description || !data.category || isNaN(data.requestor_id) || data.requestor_id <= 0) {
+                    incidentPostResult.textContent = 'Fill required fields (title, description, category, valid requestor_id)';
+                    return;
+                }
+
+                incidentPostResult.textContent = 'Creating...';
+                const result = await fetchData('/incidents', 'POST', data);
+                incidentPostResult.textContent = JSON.stringify(result, null, 2);
+                 incidentPostForm.reset(); // Clear form on success
+            });
+
+            // Incident Put
+            incidentPutForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const id = incidentPutIdInput.value;
+                 if (!id) {
+                     incidentPutResult.textContent = 'Enter Incident ID';
+                     return;
+                 }
+                const formData = new FormData(incidentPutForm);
+                const dataToUpdate = {};
+
+                // Collect fields if not empty, handle specific nullables
+                const title = formData.get('title'); if(title !== '') dataToUpdate.title = title;
+                const description = formData.get('description'); if(description !== '') dataToUpdate.description = description;
+                const category = formData.get('category'); if(category !== '') dataToUpdate.category = category;
+                const affectedAsset = formData.get('affected_asset');
+                if (affectedAsset !== null) dataToUpdate.affected_asset = affectedAsset === '' ? null : affectedAsset; // Send null if empty
+
+                const status = formData.get('status'); if(status !== '') dataToUpdate.status = status; // Send status name
+
+                const assignedToId = formData.get('assigned_to_id');
+                if (assignedToId !== null) { // Check if the field existed/was included
+                     if (assignedToId === '') { // If the input was empty
+                          dataToUpdate.assigned_to_id = null; // Explicitly send null
+                     } else { // If there's a value
+                         const numValue = parseInt(assignedToId);
+                         if (isNaN(numValue) || numValue <= 0) {
+                             incidentPutResult.textContent = 'Invalid Assigned To ID'; return;
+                         }
+                         dataToUpdate.assigned_to_id = numValue; // Send the number
+                     }
+                }
+
+                 const inProgressDetails = formData.get('in_progress_details');
+                if (inProgressDetails !== null) dataToUpdate.in_progress_details = inProgressDetails === '' ? null : inProgressDetails;
+
+                 const resolutionComments = formData.get('resolution_comments');
+                if (resolutionComments !== null) dataToUpdate.resolution_comments = resolutionComments === '' ? null : resolutionComments;
+
+
+                if (Object.keys(dataToUpdate).length === 0) {
+                     incidentPutResult.textContent = 'Enter fields to update';
+                     return;
+                }
+
+                incidentPutResult.textContent = 'Updating...';
+                const result = await fetchData(`/incidents/${id}`, 'PUT', dataToUpdate);
+                incidentPutResult.textContent = JSON.stringify(result, null, 2);
+            });
+
+            // Incident Delete
+            incidentDeleteBtn.addEventListener('click', async () => {
+                const id = incidentDeleteIdInput.value;
+                if (!id) {
+                    incidentDeleteResult.textContent = 'Enter Incident ID';
+                    return;
+                }
+                 if (!confirm(`Are you sure you want to delete incident ${id}?`)) {
+                     incidentDeleteResult.textContent = 'Deletion cancelled.';
+                     return;
+                 }
+                incidentDeleteResult.textContent = 'Deleting...';
+                const result = await fetchData(`/incidents/${id}`, 'DELETE');
+                incidentDeleteResult.textContent = JSON.stringify(result, null, 2);
+            });
+
+            // --- User Test Listeners ---
+
+            // User List
+            userListBtn.addEventListener('click', async () => {
+                userListResult.textContent = 'Loading...';
+                const data = await fetchData('/users', 'GET');
+                userListResult.textContent = JSON.stringify(data, null, 2);
+            });
+
+            // User Get One
+            userGetBtn.addEventListener('click', async () => {
+                const id = userGetIdInput.value;
+                if (!id) {
+                    userGetResult.textContent = 'Enter User ID';
+                    return;
+                }
+                userGetResult.textContent = 'Loading...';
+                const data = await fetchData(`/users/${id}`, 'GET');
+                userGetResult.textContent = JSON.stringify(data, null, 2);
+            });
+
+            // User Post
+            userPostForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const formData = new FormData(userPostForm);
+                const data = {
+                    name: formData.get('name'),
+                    email: formData.get('email')
+                };
+
+                 // Basic validation
+                if (!data.name || !data.email) {
+                    userPostResult.textContent = 'Fill required fields (name, email)';
+                    return;
+                }
+
+                userPostResult.textContent = 'Creating...';
+                const result = await fetchData('/users', 'POST', data);
+                userPostResult.textContent = JSON.stringify(result, null, 2);
+                 userPostForm.reset(); // Clear form on success
+            });
+
+            // User Put
+            userPutForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const id = userPutIdInput.value;
+                 if (!id) {
+                     userPutResult.textContent = 'Enter User ID';
+                     return;
+                 }
+                const formData = new FormData(userPutForm);
+                const dataToUpdate = {};
+
+                // Collect fields if not empty
+                const name = formData.get('name'); if(name !== '') dataToUpdate.name = name;
+                const email = formData.get('email'); if(email !== '') dataToUpdate.email = email;
+
+                 // Basic validation for email if provided
+                 if (dataToUpdate.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dataToUpdate.email)) {
+                      userPutResult.textContent = 'Invalid email format';
+                      return;
+                 }
+
+
+                if (Object.keys(dataToUpdate).length === 0) {
+                     userPutResult.textContent = 'Enter fields to update';
+                     return;
+                }
+
+                userPutResult.textContent = 'Updating...';
+                const result = await fetchData(`/users/${id}`, 'PUT', dataToUpdate);
+                userPutResult.textContent = JSON.stringify(result, null, 2);
+            });
+
+            // User Delete
+            userDeleteBtn.addEventListener('click', async () => {
+                const id = userDeleteIdInput.value;
+                if (!id) {
+                    userDeleteResult.textContent = 'Enter User ID';
+                    return;
+                }
+                 if (!confirm(`Are you sure you want to delete user ${id}?`)) {
+                     userDeleteResult.textContent = 'Deletion cancelled.';
+                     return;
+                 }
+                userDeleteResult.textContent = 'Deleting...';
+                const result = await fetchData(`/users/${id}`, 'DELETE');
+                userDeleteResult.textContent = JSON.stringify(result, null, 2);
+            });
+
+        }); // End DOMContentLoaded
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  web:
+    # image: php:8.2-apache # Comenta o elimina esta línea
+    build: ./html/php/ 
+    ports:
+      - "80:80"
+    volumes:
+      - ./html:/var/www/html/
+    depends_on:
+      - db
+    #environment:
+      # Puedes añadir variables de entorno adicionales para PHP si es necesario
+      # Por ejemplo: UPLOAD_MAX_FILESIZE, POST_MAX_SIZE, etc.
+
+  db:
+    image: mysql:8.0
+    ports:
+      - "43306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: alumnoalumno
+      MYSQL_DATABASE: fixit
+      MYSQL_USER: fixit
+      MYSQL_PASSWORD: alumnoalumno
+    volumes:
+      # Bind mount para persistir los datos en una carpeta local
+      - ./db_data:/var/lib/mysql
+      # Bind mount para ejecutar scripts de inicialización en el primer arranque
+      - ./db_init:/docker-entrypoint-initdb.d/
+      # Asegúrate de que el script init.sql esté dentro de ./db_init
+# Eliminamos la definición del volumen nombrado ya que usamos bind mount
+# volumes:
+#   db_data:
